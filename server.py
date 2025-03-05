@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 import random
 
@@ -24,9 +24,17 @@ class NameRequest(BaseModel):
     name: str
 
 @app.post("/greet")
-async def greet_user(request: NameRequest):
-    if not request.name.strip():
+async def greet_user(request: Request, name_request: NameRequest):
+    if request.headers.get("content-type") != "application/json":
+        raise HTTPException(status_code=400, detail="Content-Type must be application/json.")
+    if not name_request.name.strip():
         raise HTTPException(status_code=400, detail="Name cannot be empty.")
     greeting = random.choice(greetings)
-    return {"message": f"Hello {request.name}, {greeting}"}
+    return {"message": f"Hello {name_request.name}, {greeting}"}
+
+@app.get("/help")
+async def help():
+    return {
+        "message": "To use the /greet endpoint, send a POST request with Content-Type: application/json header and a JSON body containing a 'name' field. Example: {\"name\": \"YourName\"}"
+    }
 

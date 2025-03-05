@@ -38,3 +38,7 @@ async def help():
         "message": "To use the /greet endpoint, send a POST request with Content-Type: application/json header and a JSON body containing a 'name' field. Example: {\"name\": \"YourName\"}"
     }
 
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=6767)
+
